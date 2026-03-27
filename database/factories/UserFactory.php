@@ -26,7 +26,7 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'email' => str_replace(fake()->unique()->safeEmail(), '@example.com', ''), // create with appendix @example.com
+            'email' => fake()->unique()->safeEmail(), // generate email dengan domain @example.com untuk memastikan email yang dihasilkan valid dan unik
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),

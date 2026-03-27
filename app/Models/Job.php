@@ -11,7 +11,9 @@ class Job extends Model
     use HasFactory;
     protected $table = 'jobs_listings'; // nama tabel yang digunakan untuk model ini
 
-    protected $fillable = ['title', 'salary', 'description', 'employer_id']; // kolom yang dapat diisi secara massal, selain kolom ini tidak dapat diisi secara massal -> wajib ada
+    protected $fillable = ['title', 'salary', 'description']; // kolom yang dapat diisi secara massal, selain kolom ini tidak dapat diisi secara massal -> wajib ada
+
+    protected $guarded = ['id', 'employer_id']; // kolom yang tidak dapat diisi secara massal, selain kolom ini dapat diisi secara massal -> wajib ada
 
     public function employer()
     {

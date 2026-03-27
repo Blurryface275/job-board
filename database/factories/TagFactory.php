@@ -19,6 +19,7 @@ class TagFactory extends Factory
     {
         return [
             //
+            'name' => fake()->unique()->word(), // generate random word for tag name
         ];
     }
 }
