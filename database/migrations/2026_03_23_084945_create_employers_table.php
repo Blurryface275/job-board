@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('employers', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(App\Models\User::class); // kolom untuk menyimpan ID pengguna yang terkait dengan perusahaan
             $table->string('name'); // kolom untuk menyimpan nama perusahaan
             $table->text('description'); // kolom untuk menyimpan deskripsi perusahaan
             $table->timestamps();

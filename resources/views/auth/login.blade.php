@@ -2,6 +2,11 @@
     <x-slot:heading>
         Login
     </x-slot:heading>
+      @if (session('error'))
+    <x-form-error name="error" class="mb-8">
+        {{ session('error') }}
+    </x-form-error>
+@endif
     <form action="/login" method="POST">
         @csrf <!-- token untuk mencegah serangan CSRF, ini adalah fitur keamanan yang disediakan oleh Laravel untuk melindungi aplikasi dari serangan Cross-Site Request Forgery (CSRF) dengan memastikan bahwa setiap permintaan yang dikirim ke server berasal dari sumber yang sah -->
 

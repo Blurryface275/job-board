@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Job;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use App\Models\User;
+use App\Mail\JobPosted;
+use Illuminate\Support\Facades\Mail;
 
 class JobController extends Controller
 {
@@ -18,40 +23,58 @@ class JobController extends Controller
         ]);
     }
 
-    public function create() {
+    public function create()
+    {
         return view('jobs.create');
     }
 
-    public function show(Job $job) {
+    public function show(Job $job)
+    {
         return view('jobs.show', [
             'job' => $job
         ]);
     }
 
-    public function store(Request $request) {
-         request()->validate([
-        'title' => ['required', 'min:3'],
-        'salary' => ['required'],
-        'description' => ['required'],
-    ]);
+    public function store()
+    {
+        request()->validate([
+            'title' => ['required', 'min:3'],
+            'salary' => ['required'],
+            'description' => ['required'],
+        ]);
 
-    Job::create([
-        'employer_id' => 1, // ini hanya contoh, nanti akan diganti dengan data yang dipilih dari dropdown perusahaan
-        'title' => request('title'),
-        'salary' => request('salary'),
-        'description' => request('description')
-    ]);
+        $employer = Auth::user()->employer;
 
-    return redirect('/jobs');
+        $job = Job::create([
+            'title' => request('title'),
+            'salary' => request('salary'),
+            'description' => request('description'),
+            'employer_id' => 1,
+        ]);
+
+        Mail::to($job->employer->user)->queue(
+            new JobPosted($job) // mengirim email tapi sebagai queue, sehingga email akan dikirim secara asynchronous jadi ga nunggu lama
+        );
+
+        return redirect('/jobs');
     }
 
-    public function edit(Request $request, Job $job) {
+    public function edit(Request $request, Job $job)
+    {
+        if (Auth::guest()) {
+            return redirect('/login')->with('error', 'You must be logged in to edit this job listing.');
+        }
+
+        // The gate will run gate logic with the same name and will check if the user is authorized to edit 
+        Gate::authorize('edit-job', $job);
+
         return view('jobs.edit', [
             'job' => $job
         ]);
     }
 
-    public function update(Request $request, Job $job) {
+    public function update(Request $request, Job $job)
+    {
         // validate
         request()->validate([
             'title' => ['required', 'min:3'],
@@ -66,10 +89,16 @@ class JobController extends Controller
             'description' => request('description')
         ]);
 
-        return redirect('/jobs/'.$job->id);
+        return redirect('/jobs/' . $job->id);
     }
 
-    public function destroy(Job $job) {
+    public function destroy(Job $job)
+    {
+        if (Auth::guest()) {
+            return redirect('/login')->with('error', 'You must be logged in to edit this job listing.');
+        }
+
+        Gate::authorize('edit-job', $job); // authorize user untuk menghapus pekerjaan, hanya user yang memiliki akses yang dapat menghapus pekerjaan
         $job->delete(); // mencari data pekerjaan berdasarkan id yang diberikan, jika tidak ditemukan maka akan menampilkan error 404
 
         return redirect('/jobs');

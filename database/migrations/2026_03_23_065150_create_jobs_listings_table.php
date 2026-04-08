@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('jobs_listings', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(App\Models\Employer::class); // membuat foreign key yang menghubungkan dengan tabel employers, jika perusahaan dihapus maka pekerjaan juga akan dihapus
-            $table->string('description'); // kolom untuk menyimpan deskripsi pekerjaan
+            $table->text('description'); // kolom untuk menyimpan deskripsi pekerjaan
             $table->string('title'); // kolom untuk menyimpan judul pekerjaan
             $table->string('salary'); // kolom untuk menyimpan gaji pekerjaan
             $table->timestamps(); // berisi kolom created_at dan updated_at untuk mencatat waktu pembuatan dan pembaruan data
