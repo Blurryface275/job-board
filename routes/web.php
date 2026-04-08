@@ -20,34 +20,13 @@ Route::get('test', function () {
 
 Route::view('/', 'home');
 
-Route::controller(JobController::class)->group(function () {
 
-    // Index
-    Route::get('/jobs', [JobController::class, 'index']);
 
-    //Create
-    Route::get('/jobs/create', [JobController::class, 'create'])->middleware('auth');
-
-    // Show
-    Route::get('/jobs/{job}', [JobController::class, 'show']);
-
-    // Store
-    Route::post('/jobs', [JobController::class, 'store']);
-
-    // Edit
-    Route::get('/jobs/{job}/edit', [JobController::class, 'edit'])->middleware('auth')->can('edit', 'job'); // menambahkan middleware auth untuk memastikan bahwa hanya pengguna yang sudah login yang dapat mengakses halaman edit, dan menambahkan gate untuk memastikan bahwa hanya pengguna yang memiliki akses yang dapat mengedit pekerjaan
-
-    // Update
-    Route::patch('/jobs/{job}', [JobController::class, 'update'])->middleware('auth')->can('edit', 'job');
-
-    // Destroy
-    Route::delete('/jobs/{job}', [JobController::class, 'destroy'])->middleware('auth')->can('edit', 'job');
-});
-
-// digunakan untuk membuat semua route resource sekaligus, dengan mengecualikan beberapa route yang sudah didefinisikan secara manual di atas. 
-// Dengan menggunakan Route::resource, kita dapat menghemat waktu dan usaha dalam mendefinisikan route untuk setiap aksi CRUD (Create, Read, Update, Delete) pada resource Job. 
+// digunakan untuk membuat semua route resource sekaligus, dengan mengecualikan beberapa route yang sudah didefinisikan secara manual di atas.
+// Dengan menggunakan Route::resource, kita dapat menghemat waktu dan usaha dalam mendefinisikan route untuk setiap aksi CRUD (Create, Read, Update, Delete) pada resource Job.
 // Namun, karena kita sudah mendefinisikan route untuk index, create, show, store, edit, update, dan destroy secara manual, kita perlu mengecualikan route tersebut dari Route::resource agar tidak terjadi konflik atau duplikasi dalam penanganan request.
 Route::resource('jobs', JobController::class);
+Route::post('/jobs', [JobController::class, 'store'])->middleware('auth'); // hanya bisa diakses oleh user yang sudah login, jika belum login maka akan diarahkan ke halaman login
 Route::view('/contact', 'contact');
 
 // Auth

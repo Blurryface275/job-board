@@ -13,8 +13,6 @@ class Job extends Model
 
     protected $fillable = ['title', 'salary', 'description', 'employer_id']; // kolom yang dapat diisi secara massal, selain kolom ini tidak dapat diisi secara massal -> wajib ada
 
-    protected $guarded = ['id']; // kolom yang tidak dapat diisi secara massal, selain kolom ini dapat diisi secara massal -> wajib ada
-
     public function employer()
     {
         return $this->belongsTo(Employer::class); // relasi one to many, satu pekerjaan hanya dimiliki oleh satu perusahaan, tetapi satu perusahaan bisa memiliki banyak pekerjaan
@@ -23,6 +21,6 @@ class Job extends Model
     public function tags()
     {
 
-        return $this->belongsToMany(Tag::class, relatedPivotKey: 'tag'); // relasi many to many, satu pekerjaan bisa memiliki banyak tag, dan satu tag bisa dimiliki oleh banyak pekerjaan
+        return $this->belongsToMany(Tag::class, relatedPivotKey: 'tag_id'); // relasi many to many, satu pekerjaan bisa memiliki banyak tag, dan satu tag bisa dimiliki oleh banyak pekerjaan
     }
 }

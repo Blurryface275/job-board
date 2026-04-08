@@ -35,6 +35,7 @@ class JobController extends Controller
         ]);
     }
 
+    
     public function store()
     {
         request()->validate([
@@ -49,7 +50,7 @@ class JobController extends Controller
             'title' => request('title'),
             'salary' => request('salary'),
             'description' => request('description'),
-            'employer_id' => 1,
+            'employer_id' => $employer->id,
         ]);
 
         Mail::to($job->employer->user)->queue(
@@ -65,7 +66,7 @@ class JobController extends Controller
             return redirect('/login')->with('error', 'You must be logged in to edit this job listing.');
         }
 
-        // The gate will run gate logic with the same name and will check if the user is authorized to edit 
+        // The gate will run gate logic with the same name and will check if the user is authorized to edit
         Gate::authorize('edit-job', $job);
 
         return view('jobs.edit', [
@@ -98,7 +99,7 @@ class JobController extends Controller
             return redirect('/login')->with('error', 'You must be logged in to edit this job listing.');
         }
 
-        Gate::authorize('edit-job', $job); // authorize user untuk menghapus pekerjaan, hanya user yang memiliki akses yang dapat menghapus pekerjaan
+
         $job->delete(); // mencari data pekerjaan berdasarkan id yang diberikan, jika tidak ditemukan maka akan menampilkan error 404
 
         return redirect('/jobs');
