@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 
 class Job extends Model
 {
@@ -22,5 +23,23 @@ class Job extends Model
     {
 
         return $this->belongsToMany(Tag::class, relatedPivotKey: 'tag_id'); // relasi many to many, satu pekerjaan bisa memiliki banyak tag, dan satu tag bisa dimiliki oleh banyak pekerjaan
+    }
+
+    public function scopeFilter(Builder $builder, array $filters)
+    {
+        // Search by keyword (title or description)
+        if ($filters['search'] ?? false) {
+            $builder->where(function ($query) use ($filters) {
+                $query->where('title', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('description', 'like', '%' . $filters['search'] . '%');
+            });
+        }
+
+        // Filter by tag
+        if ($filters['tag'] ?? false) {
+            $builder->whereHas('tags', function ($query) use ($filters) {
+                $query->where('name', $filters['tag']);
+            });
+        }
     }
 }

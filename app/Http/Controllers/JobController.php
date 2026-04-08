@@ -15,8 +15,16 @@ class JobController extends Controller
     //
     public function index()
     {
-        // membuat data diambil hanya menggunakan 1 query saja, dengan menggunakan eager loading untuk mengambil data perusahaan yang terkait dengan relasi one to many
-        $jobs = Job::with('employer')->latest()->simplePaginate(3); // mengambil semua data pekerjaan beserta data perusahaan yang terkait dengan relasi one to many
+        // // membuat data diambil hanya menggunakan 1 query saja, dengan menggunakan eager loading untuk mengambil data perusahaan yang terkait dengan relasi one to many
+        // $jobs = Job::with('employer')->latest()->simplePaginate(3); // mengambil semua data pekerjaan beserta data perusahaan yang terkait dengan relasi one to many
+
+        // return view('jobs.index', [
+        //     'jobs' => $jobs
+        // ]);
+        $jobs = Job::with('employer')
+            ->filter(request(['search', 'tag']))
+            ->latest()
+            ->simplePaginate(3); // mengambil semua data pekerjaan beserta data perusahaan yang terkait
 
         return view('jobs.index', [
             'jobs' => $jobs
@@ -35,7 +43,7 @@ class JobController extends Controller
         ]);
     }
 
-    
+
     public function store()
     {
         request()->validate([
@@ -65,10 +73,6 @@ class JobController extends Controller
         if (Auth::guest()) {
             return redirect('/login')->with('error', 'You must be logged in to edit this job listing.');
         }
-
-        // The gate will run gate logic with the same name and will check if the user is authorized to edit
-        Gate::authorize('edit-job', $job);
-
         return view('jobs.edit', [
             'job' => $job
         ]);
